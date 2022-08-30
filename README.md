@@ -1,9 +1,9 @@
-# Use Case: Popular NASA Shuttle Missions
+# Use Case: Most Liked Tweets
 
 ```json
-{ 
-	mission: 'sts-10', 
-	timestamp: 1604325221 
+{
+  "tweet": "tweet-10",
+  "timestamp": 1604325221
 }
 ```
 
@@ -26,4 +26,4 @@ helm install --namespace=default --set hdfs.dataNode.replicas=1 --set yarn.nodeM
 
 ## Deploy
 
-To develop using [Skaffold](https://skaffold.dev/), use `skaffold dev`. 
+To develop using [Skaffold](https://skaffold.dev/), use `skaffold dev`.

@@ -8,7 +8,7 @@ const express = require('express')
 
 const app = express()
 const cacheTimeSecs = 15
-const numberOfMissions = 30
+const numberOfTweets = 30
 
 // -------------------------------------------------------
 // Command-line options
@@ -156,13 +156,13 @@ function sendResponse(res, html, cachedResult) {
 			<title>Big Data Use-Case Demo</title>
 			<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mini.css/3.0.1/mini-default.min.css">
 			<script>
-				function fetchRandomMissions() {
+				function likeRandomTweets() {
 					const maxRepetitions = Math.floor(Math.random() * 200)
-					document.getElementById("out").innerText = "Fetching " + maxRepetitions + " random missions, see console output"
+					document.getElementById("out").innerText = "Liking " + maxRepetitions + " random tweets, see console output"
 					for(var i = 0; i < maxRepetitions; ++i) {
-						const missionId = Math.floor(Math.random() * ${numberOfMissions})
-						console.log("Fetching mission id " + missionId)
-						fetch("/missions/sts-" + missionId, {cache: 'no-cache'})
+						const tweetId = Math.floor(Math.random() * ${numberOfTweets})
+						console.log("Fetching tweet id " + tweetId)
+						fetch("/tweets/tweet-" + tweetId, {cache: 'no-cache'})
 					}
 				}
 			</script>
@@ -170,7 +170,7 @@ function sendResponse(res, html, cachedResult) {
 		<body>
 			<h1>Big Data Use Case Demo</h1>
 			<p>
-				<a href="javascript: fetchRandomMissions();">Randomly fetch some missions</a>
+				<a href="javascript: likeRandomTweets();">Randomly like some Tweets</a>
 				<span id="out"></span>
 			</p>
 			${html}
@@ -191,9 +191,9 @@ function sendResponse(res, html, cachedResult) {
 // Start page
 // -------------------------------------------------------
 
-// Get list of missions (from cache or db)
-async function getMissions() {
-	const key = 'missions'
+// Get list of Tweets (from cache or db)
+async function getTweets() {
+	const key = 'tweet'
 	let cachedata = await getFromCache(key)
 
 	if (cachedata) {
@@ -201,7 +201,7 @@ async function getMissions() {
 		return { result: cachedata, cached: true }
 	} else {
 		console.log(`Cache miss for key=${key}, querying database`)
-		const data = await executeQuery("SELECT mission FROM missions", [])
+		const data = await executeQuery("SELECT tweet FROM tweets", [])
 		if (data) {
 			let result = data.map(row => row?.[0])
 			console.log("Got result=", result, "storing in cache")
@@ -209,52 +209,52 @@ async function getMissions() {
 				await memcached.set(key, result, cacheTimeSecs);
 			return { result, cached: false }
 		} else {
-			throw "No missions data found"
+			throw "No tweet data found"
 		}
 	}
 }
 
-// Get popular missions (from db only)
+// Get popular Tweets (from db only)
 async function getPopular(maxCount) {
-	const query = "SELECT mission, count FROM popular ORDER BY count DESC LIMIT ?"
+	const query = "SELECT tweet, count FROM popular ORDER BY count DESC LIMIT ?"
 	return (await executeQuery(query, [maxCount]))
-		.map(row => ({ mission: row?.[0], count: row?.[1] }))
+		.map(row => ({ tweet: row?.[0], count: row?.[1] }))
 }
 
 // Return HTML for start page
 app.get("/", (req, res) => {
 	const topX = 10;
-	Promise.all([getMissions(), getPopular(topX)]).then(values => {
-		const missions = values[0]
+	Promise.all([getTweets(), getPopular(topX)]).then(values => {
+		const tweets = values[0]
 		const popular = values[1]
 
-		const missionsHtml = missions.result
-			.map(m => `<a href='missions/${m}'>${m}</a>`)
+		const tweetsHtml = tweets.result
+			.map(m => `<a href='tweets/${m}'>${m}</a>`)
 			.join(", ")
 
 		const popularHtml = popular
-			.map(pop => `<li> <a href='missions/${pop.mission}'>${pop.mission}</a> (${pop.count} views) </li>`)
+			.map(pop => `<li> <a href='tweets/${pop.tweet}'>${pop.tweet}</a> (${pop.count} views) </li>`)
 			.join("\n")
 
 		const html = `
-			<h1>Top ${topX} Missions</h1>		
+			<h1>Top ${topX} Tweets</h1>		
 			<p>
 				<ol style="margin-left: 2em;"> ${popularHtml} </ol> 
 			</p>
-			<h1>All Missions</h1>
-			<p> ${missionsHtml} </p>
+			<h1>All Tweets</h1>
+			<p> ${tweetsHtml} </p>
 		`
-		sendResponse(res, html, missions.cached)
+		sendResponse(res, html, tweets.cached)
 	})
 })
 
 // -------------------------------------------------------
-// Get a specific mission (from cache or DB)
+// Get a specific Tweet (from cache or DB)
 // -------------------------------------------------------
 
-async function getMission(mission) {
-	const query = "SELECT mission, heading, description FROM missions WHERE mission = ?"
-	const key = 'mission_' + mission
+async function getTweet(tweet) {
+	const query = "SELECT tweet, heading, description FROM tweets WHERE tweet = ?"
+	const key = 'tweet_' + tweet
 	let cachedata = await getFromCache(key)
 
 	if (cachedata) {
@@ -263,32 +263,32 @@ async function getMission(mission) {
 	} else {
 		console.log(`Cache miss for key=${key}, querying database`)
 
-		let data = (await executeQuery(query, [mission]))?.[0] // first entry
+		let data = (await executeQuery(query, [tweet]))?.[0] // first entry
 		if (data) {
-			let result = { mission: data?.[0], heading: data?.[1], description: data?.[2] }
+			let result = { tweet: data?.[0], heading: data?.[1], description: data?.[2] }
 			console.log(`Got result=${result}, storing in cache`)
 			if (memcached)
 				await memcached.set(key, result, cacheTimeSecs);
 			return { ...result, cached: false }
 		} else {
-			throw "No data found for this mission"
+			throw "No data found for this Tweet"
 		}
 	}
 }
 
-app.get("/missions/:mission", (req, res) => {
-	let mission = req.params["mission"]
+app.get("/tweets/:tweet", (req, res) => {
+	let tweet = req.params["tweet"]
 
 	// Send the tracking message to Kafka
 	sendTrackingMessage({
-		mission,
+		tweet,
 		timestamp: Math.floor(new Date() / 1000)
-	}).then(() => console.log(`Sent mission=${mission} to kafka topic=${options.kafkaTopicTracking}`))
+	}).then(() => console.log(`Sent tweet=${tweet} to kafka topic=${options.kafkaTopicTracking}`))
 		.catch(e => console.log("Error sending to kafka", e))
 
 	// Send reply to browser
-	getMission(mission).then(data => {
-		sendResponse(res, `<h1>${data.mission}</h1><p>${data.heading}</p>` +
+	getTweet(tweet).then(data => {
+		sendResponse(res, `<h1>${data.tweet}</h1><p>${data.heading}</p>` +
 			data.description.split("\n").map(p => `<p>${p}</p>`).join("\n"),
 			data.cached
 		)
