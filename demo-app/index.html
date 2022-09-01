@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html ng-app="big-data">
+
+  <head>
+    <meta charset="utf-8" />
+    <title>Big Data Demo</title>
+    <script>document.write('<base href="' + document.location + '" />');</script>
+    <link rel="stylesheet" href="style.css" />
+    <script data-require="angular.js@1.2.x" src="https://code.angularjs.org/1.2.22/angular.js" data-semver="1.2.22"></script>
+    <!--script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.10/angular-route.js"></script-->
+    <!--script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.10/angular-resource.js"></script-->
+    <script src="app.js"></script>
+  </head>
+
+  <body ng-controller="MainCtrl">
+	<h1>Big Data Tweets</h1>
+	<p>
+		<a href ng-click="likeRandomTweets()" >Randomly like some Tweets</a>
+		<span id="out"></span>
+	</p>
+	
+	<h1>Top 20 Tweets</h1>		
+	<p>
+		<ol style="margin-left: 2em;" ng-repeat="elm in popular | orderBy:'-count'">
+			<li>{{elm.tweet}} likes: {{elm.count}}</li>
+		</ol> 
+	</p>
+	
+	<div ng-repeat="tweet in tweets">
+		<hr>
+		<p>{{tweet.tweet}}</p>
+		<p>{{tweet.heading}}</p>
+		<p>{{tweet.description}}</p>
+		<button ng-click="likeTweet($index)" >Like</button>
+	</div>
+	
+	<hr>
+	<h2>Information about the generated page</h4>
+	<ul>
+		<!-- following vars are only strings because its only a demo view -->
+		<li>Server: 'os.hostname()'</li>
+		<li>Date: 'new Date()'</li>
+		<li>Using 'memcachedServers.length' memcached Servers: 'memcachedServers'</li>
+		<li>Cached result: 'cachedResult'</li>
+	</ul>
+	
+  </body>
+</html>
