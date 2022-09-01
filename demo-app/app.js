@@ -28,7 +28,6 @@ function MainCtrl($scope, someService){
   $scope.getTweets = function(){
 	  $scope.tweets = JSON.parse(sessionStorage.getItem('big-data-demo')).tweets
 	  $scope.popular = JSON.parse(sessionStorage.getItem('big-data-demo')).popular
-	  someService.log($scope.tweets)
   }
   
   $scope.likeTweet = function(index){
@@ -43,12 +42,10 @@ function MainCtrl($scope, someService){
 		  }
 		  $scope.popular.push(tmp_popular)
 	  }
-	  someService.log($scope.popular)
   }
   
   $scope.init = function(){
 	  let session_data = sessionStorage.getItem('big-data-demo')
-	  someService.log(JSON.parse(session_data))
 	  if (session_data == null){
 		  let tmp_obj = {
 			  'tweets':[

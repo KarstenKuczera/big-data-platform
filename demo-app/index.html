@@ -19,8 +19,16 @@
 		<span id="out"></span>
 	</p>
 	
+	<h1>Top 20 Tweets</h1>		
+	<p>
+		<ol style="margin-left: 2em;" ng-repeat="elm in popular | orderBy:'-count'">
+			<li>{{elm.tweet}} likes: {{elm.count}}</li>
+		</ol> 
+	</p>
+	
 	<div ng-repeat="tweet in tweets">
 		<hr>
+		<p>{{tweet.tweet}}</p>
 		<p>{{tweet.heading}}</p>
 		<p>{{tweet.description}}</p>
 		<button ng-click="likeTweet($index)" >Like</button>
