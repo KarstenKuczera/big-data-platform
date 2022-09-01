@@ -7,6 +7,14 @@
 }
 ```
 
+## Disclaimer
+
+The provided base code was already not working.
+We dont recomend to start the code, it could leave the pc with lasting problems.
+For this sake we provided a demonstration of how the code would look.
+You can find it in the 'demo-app' folder.
+To Start it simply open the 'index.html' in a mordern browser of your choice.
+
 ## Prerequisites
 
 A running Strimzi.io Kafka operator
