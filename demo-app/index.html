@@ -20,7 +20,10 @@
 	</p>
 	
 	<div ng-repeat="tweet in tweets">
-		<p>{{tweet.tweet}}</p>
+		<hr>
+		<p>{{tweet.heading}}</p>
+		<p>{{tweet.description}}</p>
+		<button ng-click="likeTweet($index)" >Like</button>
 	</div>
 	
 	<hr>

@@ -15,6 +15,7 @@ function someService($http){
 function MainCtrl($scope, someService){
   console.clear();
   $scope.tweets = []
+  $scope.popular = []
   
   $scope.likeRandomTweets = function(){
 		const maxRepetitions = Math.floor(Math.random() * 200)
@@ -26,7 +27,23 @@ function MainCtrl($scope, someService){
   
   $scope.getTweets = function(){
 	  $scope.tweets = JSON.parse(sessionStorage.getItem('big-data-demo')).tweets
+	  $scope.popular = JSON.parse(sessionStorage.getItem('big-data-demo')).popular
 	  someService.log($scope.tweets)
+  }
+  
+  $scope.likeTweet = function(index){
+	  
+	  let popular_tweet = $scope.popular.find(elm => elm.tweet == "tweet-"+index)
+	  if (popular_tweet){
+		  popular_tweet.count++
+	  }else{
+		  let tmp_popular = {
+			  'tweet': 'tweet-'+index,
+			  'count': 1
+		  }
+		  $scope.popular.push(tmp_popular)
+	  }
+	  someService.log($scope.popular)
   }
   
   $scope.init = function(){
