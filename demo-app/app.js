@@ -22,6 +22,7 @@ function MainCtrl($scope, someService){
 		for(var i = 0; i < maxRepetitions; ++i) {
 			const tweetId = Math.floor(Math.random() * 29)
 			someService.log(tweetId)
+			$scope.likeTweet(tweetId)
 		}
   }
   
