@@ -10,10 +10,10 @@
 ## Disclaimer
 
 The provided base code was already not working.
-We dont recomend to start the code, it could leave the pc with lasting problems.
+We don't recommend starting the code, it could harm the pc with lasting problems.
 For this sake we provided a demonstration of how the code would look.
 You can find it in the 'demo-app' folder.
-To Start it simply open the 'index.html' in a mordern browser of your choice.
+To start it, simply open the 'index.html' in a modern browser of your choice.
 
 ## Prerequisites
 
